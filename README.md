@@ -20,15 +20,17 @@ import { ReentrancyGuard } from "reentrancy-guard";
 const guard = new ReentrancyGuard();
 
 function resetState() {
-  guard.assertNotRunning();
+  guard.assertNotLocked();
 }
 
 function updateState(userProvidedHook) {
-  guard.assertNotRunning();
+  guard.assertNotLocked();
 
   // Activate the guard for the duration of the user provided hook.
-  guard.run(userProvidedHook, "data");
+  guard.runWithLock(userProvidedHook, "data");
 }
+
+const func = guard.wrapWithLock(fn);
 ```
 
 ### Library user's code
@@ -52,10 +54,10 @@ resetState();
 ## API Overview
 
 ```typescript
-guard.isRunning;
-guard.assertNotRunning();
-result = guard.run(fn, ...args);
-wrappedFn = guard.wrap(fn);
+guard.isLocked;
+guard.assertNotLocked();
+result = guard.runWithLock(fn, ...args);
+wrappedFn = guard.wrapWithLock(fn);
 ```
 
 ## API Reference
@@ -64,32 +66,32 @@ wrappedFn = guard.wrap(fn);
 
 #### `new ReentrancyGuard()`
 
-Creates a new reentrancy guard instance with `isRunning` initialized to `false`.
+Creates a new reentrancy guard instance with `isLocked` initialized to `false`.
 
-#### `guard.isRunning: boolean`
+#### `guard.isLocked: boolean`
 
-Returns whether a guarded function is currently running (`true` while a guarded callback is executing, `false` otherwise).
+Returns whether the guard is currently locked (`true` while a guarded callback is executing, `false` otherwise).
 
-#### `guard.assertNotRunning(message?: string): void`
+#### `guard.assertNotLocked(message?: string): void`
 
-Asserts that no guarded function is currently running.
+Asserts that the guard is not currently locked.
 
-- Throws an `Error` if `isRunning === true`.
-- `message`: Optional custom error message. Defaults to `"Illegal re-entrant call: a guarded function is currently running."`.
+- Throws an `Error` if `isLocked === true`.
+- `message`: Optional custom error message. Defaults to `"Illegal re-entrant call: guard is locked."`.
 
-#### `guard.run(fn, ...args): TResult`
+#### `guard.runWithLock(fn, ...args): TResult`
 
-Executes a synchronous callback while guarding against re-entrant calls.
+Executes a synchronous callback while holding the lock to guard against re-entrant calls.
 
-- Sets `isRunning` to `true` during execution and resets it in a `finally` block so that errors thrown by `fn` are not swallowed and the guard state is always restored.
+- Sets `isLocked` to `true` during execution and resets it in a `finally` block so that errors thrown by `fn` are not swallowed and the guard state is always restored.
 - `fn`: The synchronous function to execute. Enforces `this: void` and disallows `Promise` returns at compile time.
 - `...args`: Arguments to pass to `fn`.
 - Returns the return value of `fn(...args)`.
-- Supports nested calls: internal depth is tracked so `isRunning` remains `true` until the outermost call returns.
+- Supports nested calls: internal depth is tracked so `isLocked` remains `true` until the outermost call returns.
 
-#### `guard.wrap(fn): (...args) => TResult`
+#### `guard.wrapWithLock(fn): (...args) => TResult`
 
-Wraps a synchronous callback in a function that guards its execution.
+Wraps a synchronous callback in a function that guards its execution with the lock.
 
 - `fn`: The synchronous function to wrap.
-- Returns a new function forwarding its arguments to `guard.run`.
+- Returns a new function forwarding its arguments to `guard.runWithLock`.
