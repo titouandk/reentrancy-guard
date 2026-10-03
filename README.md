@@ -2,6 +2,8 @@
 
 A synchronous guard against illegal re-entrant calls.
 
+ReentrancyGuard is useful to prevent a set of functions from being called while another function is executing.
+
 ## Installation
 
 ```bash
@@ -17,12 +19,15 @@ import { ReentrancyGuard } from "reentrancy-guard";
 
 const guard = new ReentrancyGuard();
 
+function resetState() {
+  guard.assertNotRunning();
+}
+
 function updateState(userProvidedHook) {
   guard.assertNotRunning();
 
-  // ...
+  // Activate the guard for the duration of the user provided hook.
   guard.run(userProvidedHook, "data");
-  // ...
 }
 ```
 
@@ -30,13 +35,18 @@ function updateState(userProvidedHook) {
 
 ```typescript
 function problematicHook(data: string) {
-  updateState(() => {
-    // This will throw: Illegal re-entrant call: a guarded function is currently running.
-    // A hook cannot call updateState() again.
-  });
+  // Calling resetState() from inside the hook will throw.
+  resetState();
+
+  // Calling updateState() from inside the hook will throw.
+  updateState(() => {});
 }
 
+// Calling updateState() from outside the hook is allowed.
 updateState(problematicHook);
+
+// Calling resetState() from outside the hook is allowed.
+resetState();
 ```
 
 ## API Overview
