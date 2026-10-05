@@ -4,6 +4,9 @@ A guard against illegal synchronous re-entrant calls.
 
 ReentrancyGuard is useful to prevent a set of functions from being called while another function is executing.
 
+> [!NOTE]
+> **Intended Use**: This library is a developer tool to catch accidental reentrancy bugs, recursive lifecycle loops, and state-invalidation errors early. It is **not** a security sandbox designed to isolate hostile or untrusted code.
+
 ## Installation
 
 ```bash
