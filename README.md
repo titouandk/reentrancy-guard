@@ -28,6 +28,11 @@ function updateState(userProvidedHook) {
 
   // Activate the guard for the duration of the user provided hook.
   guard.runWithLock(userProvidedHook, "data");
+
+  // Alternatively, create a wrapper of the hook that
+  // will automatically lock the guard during its execution.
+  // const lockedHook = guard.wrapWithLock(userProvidedHook);
+  // lockedHook("data");
 }
 ```
 
