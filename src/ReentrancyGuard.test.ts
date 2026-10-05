@@ -222,7 +222,7 @@ describe("ReentrancyGuard", () => {
       expect(guard.isLocked).toBe(false);
     });
 
-    it("can be called multiple times, properly guarding execution each time", () => {
+    it("can be called multiple times, holding the lock during execution each time", () => {
       const guard = new ReentrancyGuard();
       const wrapped = guard.wrapWithLock((x: number) => {
         expect(guard.isLocked).toBe(true);
