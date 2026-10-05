@@ -1,6 +1,6 @@
 # reentrancy-guard
 
-A synchronous guard against illegal re-entrant calls.
+A guard against illegal synchronous re-entrant calls.
 
 ReentrancyGuard is useful to prevent a set of functions from being called while another function is executing.
 
@@ -91,7 +91,7 @@ Executes a synchronous callback while holding the lock to guard against re-entra
 
 #### `guard.wrapWithLock(fn): (...args) => TResult`
 
-Wraps a synchronous callback in a function that guards its execution with the lock.
+Wraps a synchronous callback in a function that will hold the lock for the duration of the callback execution.
 
 - `fn`: The synchronous function to wrap.
 - Returns a new function forwarding its arguments to `guard.runWithLock`.

@@ -55,7 +55,7 @@ export class ReentrancyGuard {
   }
 
   /**
-   * Wraps a synchronous callback in a function that guards its execution with the lock.
+   * Wraps a synchronous callback in a function that will hold the lock for the duration of the callback execution.
    *
    * @param fn The synchronous function to wrap.
    * @returns A new function that forwards its arguments to `runWithLock`.
