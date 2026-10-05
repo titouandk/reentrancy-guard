@@ -1,6 +1,6 @@
 {
   "name": "reentrancy-guard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A guard against illegal synchronous re-entrant calls.",
   "main": "dist/index.js",
   "scripts": {
