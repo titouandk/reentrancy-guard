@@ -29,8 +29,6 @@ function updateState(userProvidedHook) {
   // Activate the guard for the duration of the user provided hook.
   guard.runWithLock(userProvidedHook, "data");
 }
-
-const func = guard.wrapWithLock(fn);
 ```
 
 ### Library user's code
