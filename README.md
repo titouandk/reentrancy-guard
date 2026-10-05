@@ -68,7 +68,7 @@ Creates a new reentrancy guard instance with `isLocked` initialized to `false`.
 
 #### `guard.isLocked: boolean`
 
-Returns whether the guard is currently locked (`true` while a guarded callback is executing, `false` otherwise).
+Returns whether the guard is currently locked (`true` while a callback passed to `runWithLock` is executing, `false` otherwise).
 
 #### `guard.assertNotLocked(message?: string): void`
 
