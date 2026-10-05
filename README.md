@@ -98,3 +98,25 @@ Wraps a synchronous callback in a function that will hold the lock for the durat
 
 - `fn`: The synchronous function to wrap.
 - Returns a new function forwarding its arguments to `guard.runWithLock`.
+
+## Corner Cases
+
+### Nested Locking Calls
+
+Calling `runWithLock` (or a function returned by `wrapWithLock`) from within another locked execution is supported. Internal call depth is tracked so the guard is never unlocked prematurely:
+
+```typescript
+guard.runWithLock(() => {
+  guard.runWithLock(() => {
+    // Nested call succeeds; guard.isLocked remains true
+  });
+
+  // The guard remains locked until the outermost call returns
+  guard.isLocked; // true
+});
+
+guard.isLocked; // false
+```
+
+- **Inner errors**: If an inner call throws and is caught, the outer execution remains protected with `isLocked === true`.
+- **Unhandled errors**: Errors always bubble up without being swallowed, and `isLocked` is reliably reset to `false`.
